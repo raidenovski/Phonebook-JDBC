@@ -57,4 +57,8 @@ public class PhonebookEngine {
             mainMenu();
     }
 
+    public void findContact() {
+        System.out.print("Search for: ");
+        String toFind = userInput.nextLine();
+    }
 } // End of class
