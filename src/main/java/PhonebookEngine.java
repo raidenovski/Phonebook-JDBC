@@ -2,6 +2,8 @@
  * Created by raiden on 3/14/17.
  */
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.ArrayList;
@@ -10,6 +12,7 @@ public class PhonebookEngine {
 
     private static Scanner userInput = new Scanner(System.in);
     ArrayList<String> menuOptions = new ArrayList<String>();
+    ConnectionManager connectionManager;
 
     private String option1 = " 1 - Add a contact";
     private String option2 = " 2 - Remove a contact";
@@ -41,12 +44,12 @@ public class PhonebookEngine {
             try {
                 int option = userInput.nextInt();
                 switch (option) {
-                    case 1: addContact(); break;
-                    case 2: removeContact(); break;
+                    //case 1: addContact(); break;
+                    //case 2: removeContact(); break;
                     case 3: findContact(); break;
-                    case 4: listAll(); break;
-                    case 5: dialContact(); break;
-                    case 6: exportList(); break;
+                    //case 4: listAll(); break;
+                    //case 5: dialContact(); break;
+                    //case 6: exportList(); break;
                     case 0: System.exit(0); break;
                     default: break;
                 }
@@ -60,5 +63,15 @@ public class PhonebookEngine {
     public void findContact() {
         System.out.print("Search for: ");
         String toFind = userInput.nextLine();
+
+        try {
+            ResultSet resultSet = connectionManager.getResults(toFind);
+
+            System.out.println("Contact found: " + resultSet);
+
+            resultSet.close();
+        } catch (SQLException connExc) {
+            connExc.printStackTrace();
+        }
     }
 } // End of class
