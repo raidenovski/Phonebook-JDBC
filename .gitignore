@@ -2,3 +2,6 @@
 .idea/*
 PhonebookJDBC.iml
 
+# Maven
+log/
+target/

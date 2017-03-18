@@ -2,76 +2,50 @@
  * Created by raiden on 3/14/17.
  */
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.InputMismatchException;
-import java.util.Scanner;
+import java.sql.*;
+import java.util.List;
 import java.util.ArrayList;
 
 public class PhonebookEngine {
 
-    private static Scanner userInput = new Scanner(System.in);
-    ArrayList<String> menuOptions = new ArrayList<String>();
-    ConnectionManager connectionManager;
+    private static final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/phonebook";
+    private static final String USER = "java";
+    private static final String PASS = "test123";
+    private static Connection connection;
 
-    private String option1 = " 1 - Add a contact";
-    private String option2 = " 2 - Remove a contact";
-    private String option3 = " 3 - Search for a contact";
-    private String option4 = " 4 - List all contacts";
-    private String option5 = " 5 - Dial a contact";
-    private String option6 = " 6 - Export contact list";
-    private String option0 = " 0 - Exit";
-
-    public PhonebookEngine() {
-        System.out.println("Welcome to your phonebook");
-        menuOptions.add(option1);
-        menuOptions.add(option2);
-        menuOptions.add(option3);
-        menuOptions.add(option4);
-        menuOptions.add(option5);
-        menuOptions.add(option6);
-        menuOptions.add(option0);
-        mainMenu();
-    }
-
-    public void mainMenu() {
-        for (String option : menuOptions) {
-            System.out.println(option);
+    private static Connection loadDriver() throws SQLException {
+        try {
+            Class.forName(JDBC_DRIVER);
+            System.out.println("DB Driver loaded...");
+            connection = DriverManager.getConnection(DB_URL, USER, PASS);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
         }
-            System.out.println();
-            System.out.print("Select an option by number: ");
-
-            try {
-                int option = userInput.nextInt();
-                switch (option) {
-                    //case 1: addContact(); break;
-                    //case 2: removeContact(); break;
-                    case 3: findContact(); break;
-                    //case 4: listAll(); break;
-                    //case 5: dialContact(); break;
-                    //case 6: exportList(); break;
-                    case 0: System.exit(0); break;
-                    default: break;
-                }
-            } catch (InputMismatchException e) {
-                System.out.println("Please use numbers to select an option");
-                userInput.nextInt();
-            }
-            mainMenu();
+        return connection;
     }
 
-    public void findContact() {
-        System.out.print("Search for: ");
-        String toFind = userInput.nextLine();
+    public static List<Contact> getContact(String query) throws SQLException {
+        List <Contact> contactList = new ArrayList<Contact>();
+        ResultSet results = null;
+        Statement statement = null;
 
         try {
-            ResultSet resultSet = connectionManager.getResults(toFind);
+            Connection connection = loadDriver();
+            statement = connection.createStatement();
+            results = statement.executeQuery(query);
 
-            System.out.println("Contact found: " + resultSet);
-
-            resultSet.close();
-        } catch (SQLException connExc) {
-            connExc.printStackTrace();
+            while (results.next()) {
+                Contact contact = new Contact();
+                contact.setName(results.getString("name"));
+                contact.setNumber(results.getInt("tel"));
+                contactList.add(contact);
+            }
+        }  finally {
+            if (results != null) try { results.close(); } catch (SQLException ignore) {}
+            if (statement != null) try { statement.close(); } catch (SQLException ignore) {}
+            if (connection != null) try { connection.close(); } catch (SQLException ignore) {}
         }
+        return contactList;
     }
 } // End of class
