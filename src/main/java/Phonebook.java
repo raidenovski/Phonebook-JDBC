@@ -40,6 +40,7 @@ public class Phonebook {
 
         try {
             int option = userInput.nextInt();
+            userInput.nextLine();
             switch (option) {
                 //case 1: addContact(); break;
                 //case 2: removeContact(); break;
@@ -54,19 +55,26 @@ public class Phonebook {
             System.out.println("Please use numbers to select an option");
             userInput.nextInt();
         }
+        System.out.println("----------- Menu ------------");
         mainMenu();
     }
 
     public void findContact() {
         System.out.println("Search for: ");
-        String toSearch =  "Bob"; // userInput.nextLine();
-        String sqlQuery = "select * from contacts where name=" + toSearch;
+        String toSearch =  userInput.nextLine();
+        Contact contact = new Contact();
 
         try {
-            PhonebookEngine.getContact(sqlQuery);
+            contact = PhonebookEngine.getContact(toSearch);
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        if (contact.getName() == null) {
+            System.out.println("Sorry, no contacts found by that name");
+        } else {
+            contact.printSearchResults(contact);
+        }
+
     }
 
 } // End of class
