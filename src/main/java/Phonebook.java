@@ -42,7 +42,7 @@ public class Phonebook {
             int option = userInput.nextInt();
             userInput.nextLine();
             switch (option) {
-                //case 1: addContact(); break;
+                case 1: addContact(); break;
                 //case 2: removeContact(); break;
                 case 3: findContact(); break;
                 //case 4: listAll(); break;
@@ -74,7 +74,56 @@ public class Phonebook {
         } else {
             contact.printSearchResults(contact);
         }
+    }
 
+    public void addContact() {
+        System.out.println("Creating new contact");
+        String name = addName();
+        int tel = addNumber();
+
+        try {
+            PhonebookEngine.updateContact(name, tel);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String addName() {
+        String name;
+
+        while (true) {
+            System.out.print("Name: ");
+            name = userInput.nextLine();
+
+            if (!(name.matches("(([A-Za-z][ ]?){2,30})"))) {
+                System.out.println("Invalid name, cannot contain special characters or numbers");
+                continue;
+            }
+            break;
+        }
+        return name;
+    }
+
+    private int addNumber() {
+        int tel;
+
+        while (true) {
+            System.out.print("Phone number: ");
+            try {
+                tel = userInput.nextInt();
+                int telLength = String.valueOf(tel).length();
+
+                if ((telLength < 6) || (telLength > 15)) {
+                    System.out.println("Incorrect phone number length. Try again");
+                    continue;
+                }
+                break;
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid phone number format. Please do not use spaces or letters");
+                userInput.next();
+            }
+        }
+        return tel;
     }
 
 } // End of class
