@@ -25,15 +25,15 @@ public class PhonebookEngine {
         return connection;
     }
 
-    protected static void updateContact(String nameParam, int numParam) throws SQLException {
-        String sql = "insert into contacts (name, tel) values (?, ?)";
+    protected static void insertContact(String nameParam, int numParam) throws SQLException {
+        String sql = "insert into contacts" + " (name, tel)" + " values (?,?)";
         Connection connection = loadDriver();
         try {
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1, nameParam);
             statement.setInt(2, numParam);
             try {
-                ResultSet updateResult = statement.executeQuery();
+                statement.executeUpdate();
                 System.out.println("Contact " + nameParam + " with number " + numParam + " saved to contact list");
             } finally {
                 statement.close();
@@ -43,7 +43,11 @@ public class PhonebookEngine {
         }
     }
 
-    public static Contact getContact(String queryParam) throws SQLException {
+    protected static void removeContact(String queryParam) {
+
+    }
+
+    protected static Contact getContact(String queryParam) throws SQLException {
         Contact contact = new Contact();
         String sql = "select * from contacts where name=?";
 
