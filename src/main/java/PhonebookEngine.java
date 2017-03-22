@@ -21,6 +21,7 @@ public class PhonebookEngine {
             connection = DriverManager.getConnection(DB_URL, USER, PASS);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
+            System.exit(0);
         }
         return connection;
     }
@@ -45,10 +46,12 @@ public class PhonebookEngine {
 
     protected static void removeContact(String queryParam) {
 
+        // implement a method
+
     }
 
-    protected static Contact getContact(String queryParam) throws SQLException {
-        Contact contact = new Contact();
+    protected static List<Contact> getContacts(String queryParam) throws SQLException {
+        List<Contact> contactList = new ArrayList<Contact>();
         String sql = "select * from contacts where name=?";
 
         Connection connection = loadDriver();
@@ -58,10 +61,10 @@ public class PhonebookEngine {
             try {
                 ResultSet results = statement.executeQuery();
 
-                while (results.next()) {
-                    contact.setName(results.getString("name"));
-                    contact.setNumber(results.getInt("tel"));
-
+                while(results.next()) {
+                    Contact contact = new Contact(
+                            results.getString("name"), results.getInt("tel"));
+                    contactList.add(contact);
                 }
             } finally {
                 statement.close();
@@ -69,6 +72,13 @@ public class PhonebookEngine {
         } finally {
             connection.close();
         }
-        return contact;
+        return contactList;
+    }
+
+    protected static Contact getContact(String queryParam) throws SQLException {
+
+        // make it work with phone numbers
+
+
     }
 } // End of class

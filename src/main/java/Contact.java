@@ -29,9 +29,11 @@ public class Contact {
         this.number = number;
     }
 
-    protected void printSearchResults(Contact contact) {
-        System.out.println("Contact found:");
-        System.out.println("Name: " + contact.getName());
-        System.out.println("Telephone: " + contact.getNumber());
+    @Override
+    public String toString() {
+        return "Contact{" +
+                "name='" + name + '\'' +
+                ", number=" + number +
+                '}';
     }
 }

@@ -13,10 +13,11 @@ public class Phonebook {
 
     private String option1 = " 1 - Add a contact";
     private String option2 = " 2 - Delete a contact";
-    private String option3 = " 3 - Search for a contact";
-    private String option4 = " 4 - List all contacts";
-    private String option5 = " 5 - Dial a contact";
-    private String option6 = " 6 - Export contact list";
+    private String option3 = " 3 - Search by name";
+    private String option4 = " 4 - Search by number"
+    private String option5 = " 5 - List all contacts";
+    private String option6 = " 6 - Dial a contact";
+    private String option7 = " 7 - Export contact list";
     private String option0 = " 0 - Exit";
 
     public Phonebook() {
@@ -27,6 +28,7 @@ public class Phonebook {
         menuOptions.add(option4);
         menuOptions.add(option5);
         menuOptions.add(option6);
+        menuOptions.add(option7);
         menuOptions.add(option0);
         mainMenu();
     }
@@ -44,10 +46,11 @@ public class Phonebook {
             switch (option) {
                 case 1: addContact(); break;
                 case 2: deleteContact(); break;
-                case 3: findContact(); break;
-                //case 4: listAll(); break;
-                //case 5: dialContact(); break;
-                //case 6: exportList(); break;
+                case 3: findByName(); break;
+                case 4: findByNumber(); break;
+                //case 5: listAll(); break;
+                //case 6: dialContact(); break;
+                //case 7: exportList(); break;
                 case 0: System.exit(0); break;
                 default: break;
             }
@@ -59,17 +62,15 @@ public class Phonebook {
         mainMenu();
     }
 
-    public void findContact() {
+    public void findByName() {
         System.out.print("Search for: ");
         Contact contact = searchContacts();
 
-        // move this if into searchContact private?
-        if (contact.getName() == null) {
+        if (contact == null) {
             System.out.println("Sorry, no contacts found by that name");
         } else {
-            contact.printSearchResults(contact);
+            System.out.println(contact.toString());
         }
-
     }
 
     public void addContact() {
@@ -88,7 +89,7 @@ public class Phonebook {
         System.out.print("Enter contact name to delete: ");
         Contact toDelete = searchContacts();
 
-        if (toDelete.getName() == null) {
+        if (toDelete == null) {
             System.out.println("No contacts found by that name");
         } else {
 
@@ -136,14 +137,13 @@ public class Phonebook {
 
     private Contact searchContacts() {
         String toSearch = userInput.nextLine().toLowerCase();
-        Contact contact = new Contact();
+        Contact contact = null;
 
         try {
             contact = PhonebookEngine.getContact(toSearch);
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return contact;
     }
 
