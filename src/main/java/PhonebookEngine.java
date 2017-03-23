@@ -75,10 +75,10 @@ public class PhonebookEngine {
         return contactList;
     }
 
-    protected static Contact getContact(String queryParam) throws SQLException {
+    //protected static Contact getContact(String queryParam) throws SQLException {
 
         // make it work with phone numbers
 
 
-    }
+   // }
 } // End of class

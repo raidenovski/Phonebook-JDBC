@@ -15,7 +15,7 @@ public class Phonebook {
     private String option1 = " 1 - Add a contact";
     private String option2 = " 2 - Delete a contact";
     private String option3 = " 3 - Search by name";
-    private String option4 = " 4 - Search by number"
+    private String option4 = " 4 - Search by number";
     private String option5 = " 5 - List all contacts";
     private String option6 = " 6 - Dial a contact";
     private String option7 = " 7 - Export contact list";
@@ -48,7 +48,7 @@ public class Phonebook {
                 case 1: addContact(); break;
                 case 2: deleteContact(); break;
                 case 3: findByName(); break;
-                case 4: findByNumber(); break;
+                //case 4: findByNumber(); break;
                 //case 5: listAll(); break;
                 //case 6: dialContact(); break;
                 //case 7: exportList(); break;
@@ -153,10 +153,10 @@ public class Phonebook {
         } else if (contactList.size() > 1){
             System.out.println("More contacts found with name " + toSearch);
             for (Contact contact : contactList) {
-                contact.toString();
+                System.out.println(contact.toString());
             }
             System.out.print("Please choose a contact by phone number: ");
-            int selectByNumber = Integer.parseInt(userInput.nextLine());
+            int selectByNumber = Integer.parseInt(userInput.nextLine()); // make a 'safety net' here
 
             for (Contact contact : contactList) {
                 if (contact.getNumber() == selectByNumber) {
