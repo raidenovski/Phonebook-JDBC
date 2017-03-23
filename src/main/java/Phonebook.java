@@ -1,6 +1,7 @@
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -137,14 +138,33 @@ public class Phonebook {
 
     private Contact searchContacts() {
         String toSearch = userInput.nextLine().toLowerCase();
-        Contact contact = null;
+        List<Contact> contactList = new ArrayList<Contact>();
+        Contact foundContact = null;
 
         try {
-            contact = PhonebookEngine.getContact(toSearch);
+            contactList = PhonebookEngine.getContacts(toSearch);
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return contact;
+
+        if (contactList.size() == 1) {
+            System.out.println("One contact found");
+            foundContact = contactList.get(0);
+        } else if (contactList.size() > 1){
+            System.out.println("More contacts found with name " + toSearch);
+            for (Contact contact : contactList) {
+                contact.toString();
+            }
+            System.out.print("Please choose a contact by phone number: ");
+            int selectByNumber = Integer.parseInt(userInput.nextLine());
+
+            for (Contact contact : contactList) {
+                if (contact.getNumber() == selectByNumber) {
+                    foundContact = contact;
+                }
+            }
+        }
+        return foundContact;
     }
 
 } // End of class
