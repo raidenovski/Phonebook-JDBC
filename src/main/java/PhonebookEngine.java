@@ -2,6 +2,7 @@
  * Created by raiden on 3/14/17.
  */
 
+import javax.swing.plaf.nimbus.State;
 import java.sql.*;
 import java.util.List;
 import java.util.ArrayList;
@@ -73,6 +74,15 @@ public class PhonebookEngine {
             connection.close();
         }
         return contactList;
+    }
+
+    protected static List<Contact> getAllContacts() {
+        List<Contact> contactList = new ArrayList<Contact>();
+        String sql = "select * from contacts order by name";
+
+        try {
+            Statement
+        }
     }
 
     //protected static Contact getContact(String queryParam) throws SQLException {

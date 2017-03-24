@@ -1,3 +1,5 @@
+import jdk.internal.util.xml.impl.Input;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
@@ -49,7 +51,7 @@ public class Phonebook {
                 case 2: deleteContact(); break;
                 case 3: findByName(); break;
                 //case 4: findByNumber(); break;
-                //case 5: listAll(); break;
+                case 5: listAll(); break;
                 //case 6: dialContact(); break;
                 //case 7: exportList(); break;
                 case 0: System.exit(0); break;
@@ -97,6 +99,10 @@ public class Phonebook {
         }
     }
 
+    public void listAll() {
+
+    }
+
     // private methods
     private String addName() {
         String name;
@@ -113,7 +119,6 @@ public class Phonebook {
         }
         return name;
     }
-
     private int addNumber() {
         int tel;
 
@@ -139,25 +144,40 @@ public class Phonebook {
     private Contact searchContacts() {
         String toSearch = userInput.nextLine().toLowerCase();
         List<Contact> contactList = new ArrayList<Contact>();
+        List phoneNumbers = new ArrayList();
         Contact foundContact = null;
-
         try {
             contactList = PhonebookEngine.getContacts(toSearch);
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         if (contactList.size() == 1) {
             System.out.println("One contact found");
             foundContact = contactList.get(0);
-        } else if (contactList.size() > 1){
+        } else if (contactList.size() > 1) {
             System.out.println("More contacts found with name " + toSearch);
             for (Contact contact : contactList) {
                 System.out.println(contact.toString());
+                phoneNumbers.add(contact.getNumber());
             }
-            System.out.print("Please choose a contact by phone number: ");
-            int selectByNumber = Integer.parseInt(userInput.nextLine()); // make a 'safety net' here
 
+            int selectByNumber;
+
+            while (true) {
+                System.out.print("Please choose an above contact by phone number: ");
+                try {
+                    selectByNumber = userInput.nextInt();
+
+                    if (!phoneNumbers.contains(selectByNumber)) {
+                        System.out.println("Number not found in the above list");
+                        continue;
+                    }
+                    break;
+                } catch (InputMismatchException e) {
+                    System.out.println("Invalid phone number entered");
+                    userInput.next();
+                }
+            }
             for (Contact contact : contactList) {
                 if (contact.getNumber() == selectByNumber) {
                     foundContact = contact;
@@ -166,5 +186,6 @@ public class Phonebook {
         }
         return foundContact;
     }
+
 
 } // End of class
