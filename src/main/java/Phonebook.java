@@ -91,16 +91,35 @@ public class Phonebook {
     public void deleteContact() {
         System.out.print("Enter contact name to delete: ");
         Contact toDelete = searchContacts();
+        boolean isDeleted = false;
 
         if (toDelete == null) {
             System.out.println("No contacts found by that name");
         } else {
-
+            try {
+                isDeleted = PhonebookEngine.removeContact(toDelete.getName(), toDelete.getNumber());
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (isDeleted) {
+                System.out.println(toDelete.toString() + " has been deleted");
+            }
         }
     }
 
     public void listAll() {
+        List<Contact> contactList = new ArrayList<Contact>();
 
+        try {
+            contactList = PhonebookEngine.getAllContacts();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        for (Contact contact : contactList) {
+            System.out.println(contact.toString());
+        }
+        System.out.println("Total contacts in phonebook: " + contactList.size());
     }
 
     // private methods
@@ -146,6 +165,7 @@ public class Phonebook {
         List<Contact> contactList = new ArrayList<Contact>();
         List phoneNumbers = new ArrayList();
         Contact foundContact = null;
+
         try {
             contactList = PhonebookEngine.getContacts(toSearch);
         } catch (SQLException e) {

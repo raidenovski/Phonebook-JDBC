@@ -3,6 +3,7 @@
  */
 
 import javax.swing.plaf.nimbus.State;
+import javax.xml.transform.Result;
 import java.sql.*;
 import java.util.List;
 import java.util.ArrayList;
@@ -45,10 +46,26 @@ public class PhonebookEngine {
         }
     }
 
-    protected static void removeContact(String queryParam) {
+    protected static boolean removeContact(String nameParam, int numParam) throws SQLException {
+        String sql = "DELETE FROM contacts " + "WHERE name=? " + "AND tel=?";
+        boolean isDeleted;
 
-        // implement a method
+        Connection connection = loadDriver();
+        try {
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, nameParam);
+            statement.setInt(2, numParam);
+            try {
+                statement.executeUpdate();
+                isDeleted = true;
+            } finally {
+                statement.close();
+            }
+        } finally {
+            connection.close();
+        }
 
+        return isDeleted;
     }
 
     protected static List<Contact> getContacts(String queryParam) throws SQLException {
@@ -76,13 +93,28 @@ public class PhonebookEngine {
         return contactList;
     }
 
-    protected static List<Contact> getAllContacts() {
+    protected static List<Contact> getAllContacts() throws SQLException {
         List<Contact> contactList = new ArrayList<Contact>();
         String sql = "select * from contacts order by name";
 
+        Connection connection = loadDriver();
         try {
-            Statement
+            Statement statement = connection.prepareStatement(sql);
+            try {
+                ResultSet results = statement.executeQuery(sql);
+
+                while(results.next()) {
+                    Contact contact = new Contact(
+                            results.getString("name"), results.getInt("tel"));
+                    contactList.add(contact);
+                }
+            } finally {
+                statement.close();
+            }
+        } finally {
+            connection.close();
         }
+        return contactList;
     }
 
     //protected static Contact getContact(String queryParam) throws SQLException {
