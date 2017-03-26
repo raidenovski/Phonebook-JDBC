@@ -2,8 +2,6 @@
  * Created by raiden on 3/14/17.
  */
 
-import javax.swing.plaf.nimbus.State;
-import javax.xml.transform.Result;
 import java.sql.*;
 import java.util.List;
 import java.util.ArrayList;
@@ -11,7 +9,7 @@ import java.util.ArrayList;
 public class PhonebookEngine {
 
     private static final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/phonebook?verifyServerCertificate=false&useSSL=true";
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/phonebook?verifyServerCertificate=false&useSSL=true&serverTimezone=UTC";
     private static final String USER = "java";
     private static final String PASS = "test123";
     private static Connection connection;
@@ -117,10 +115,26 @@ public class PhonebookEngine {
         return contactList;
     }
 
-    //protected static Contact getContact(String queryParam) throws SQLException {
+    protected static Contact getContactByNumber(int queryParam) throws SQLException {
+    String sql = "select * from contacts " + "where tel=?";
+    Contact contact = null;
 
-        // make it work with phone numbers
+    Connection connection = loadDriver();
+    try {
+        PreparedStatement statement = connection.prepareStatement(sql);
+        statement.setInt(1, queryParam);
 
-
-   // }
+        try {
+            ResultSet results = statement.executeQuery();
+            while(results.next()) {
+                contact = new Contact(results.getString("name"), results.getInt("tel"));
+            }
+        } finally {
+            statement.close();
+        }
+    } finally {
+        connection.close();
+    }
+    return contact;
+   }
 } // End of class

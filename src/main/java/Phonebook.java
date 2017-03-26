@@ -19,7 +19,7 @@ public class Phonebook {
     private String option3 = " 3 - Search by name";
     private String option4 = " 4 - Search by number";
     private String option5 = " 5 - List all contacts";
-    private String option6 = " 6 - Dial a contact";
+    private String option6 = " 6 - Update a contact";
     private String option7 = " 7 - Export contact list";
     private String option0 = " 0 - Exit";
 
@@ -50,9 +50,9 @@ public class Phonebook {
                 case 1: addContact(); break;
                 case 2: deleteContact(); break;
                 case 3: findByName(); break;
-                //case 4: findByNumber(); break;
+                case 4: findByNumber(); break;
                 case 5: listAll(); break;
-                //case 6: dialContact(); break;
+                //case 6: updateContact(); break;
                 //case 7: exportList(); break;
                 case 0: System.exit(0); break;
                 default: break;
@@ -76,8 +76,20 @@ public class Phonebook {
         }
     }
 
+    public void findByNumber() {
+        System.out.print("Enter phone number:");
+        int tel = validateNumber();
+        Contact contact = getbyNumber(tel);
+
+        if (contact == null) {
+            System.out.println("No contacts found by that number");
+        } else {
+            System.out.println("Contact found: " + contact.toString());
+        }
+    }
+
     public void addContact() {
-        System.out.println("Creating new contact");
+        System.out.println("Creating a new contact");
         String name = addName();
         int tel = addNumber();
 
@@ -123,6 +135,8 @@ public class Phonebook {
     }
 
     // private methods
+
+    // adds a name to a contact
     private String addName() {
         String name;
 
@@ -138,24 +152,23 @@ public class Phonebook {
         }
         return name;
     }
+
+    // adds phone number to a contact
     private int addNumber() {
+        System.out.print("Enter contact phone number: ");
         int tel;
 
-        while (true) {
-            System.out.print("Phone number: ");
-            try {
-                tel = userInput.nextInt();
-                int telLength = String.valueOf(tel).length();
-
-                if ((telLength < 6) || (telLength > 15)) {
-                    System.out.println("Incorrect phone number length. Try again");
-                    continue;
-                }
-                break;
-            } catch (InputMismatchException e) {
-                System.out.println("Invalid phone number format. Please do not use spaces or letters");
-                userInput.next();
+        while(true) {
+            tel = validateNumber();
+            Contact contact = getbyNumber(tel);
+            // NULL POINTER EXCEPTION, find a way to solve it, changing the if statement
+            if (contact.getNumber() == tel) {
+                System.out.println("That number already exists for contact " + contact.getName() + ". Try a different one");
+                continue;
+            } else if (contact == null) {
+                System.out.println("Adding new number...");
             }
+            break;
         }
         return tel;
     }
@@ -205,6 +218,39 @@ public class Phonebook {
             }
         }
         return foundContact;
+    }
+
+    // validates correct phone number format
+    private int validateNumber() {
+        int tel;
+
+        while (true) {
+            try {
+                tel = userInput.nextInt();
+                int telLength = String.valueOf(tel).length();
+
+                if ((telLength < 6) || (telLength > 15)) {
+                    System.out.println("Incorrect phone number length. Try again");
+                    continue;
+                }
+                break;
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid phone number format. Please do not use spaces or letters");
+                userInput.next();
+            }
+        }
+        return tel;
+    }
+
+    private Contact getbyNumber (int tel) {
+        Contact contact = null;
+
+        try {
+            contact = PhonebookEngine.getContactByNumber(tel);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return contact;
     }
 
 
