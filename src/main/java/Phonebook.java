@@ -52,7 +52,7 @@ public class Phonebook {
                 case 3: findByName(); break;
                 case 4: findByNumber(); break;
                 case 5: listAll(); break;
-                //case 6: updateContact(); break;
+                case 6: updateContact(); break;
                 //case 7: exportList(); break;
                 case 0: System.exit(0); break;
                 default: break;
@@ -134,6 +134,13 @@ public class Phonebook {
         System.out.println("Total contacts in phonebook: " + contactList.size());
     }
 
+    public void updateContact() {
+        System.out.print("Enter a contact name to edit: ");
+        Contact contact = searchContacts();
+        // implement the edit method
+
+    }
+
     // private methods
 
     // adds a name to a contact
@@ -161,12 +168,11 @@ public class Phonebook {
         while(true) {
             tel = validateNumber();
             Contact contact = getbyNumber(tel);
-            // NULL POINTER EXCEPTION, find a way to solve it, changing the if statement
-            if (contact.getNumber() == tel) {
+            if (contact == null) {
+                System.out.println("Adding new number...");
+            } else if (contact.getNumber() == tel) {
                 System.out.println("That number already exists for contact " + contact.getName() + ". Try a different one");
                 continue;
-            } else if (contact == null) {
-                System.out.println("Adding new number...");
             }
             break;
         }
