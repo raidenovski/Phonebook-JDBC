@@ -1,3 +1,5 @@
+import jdk.internal.util.xml.impl.Input;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
@@ -15,9 +17,9 @@ public class Phonebook {
     private String option1 = " 1 - Add a contact";
     private String option2 = " 2 - Delete a contact";
     private String option3 = " 3 - Search by name";
-    private String option4 = " 4 - Search by number"
+    private String option4 = " 4 - Search by number";
     private String option5 = " 5 - List all contacts";
-    private String option6 = " 6 - Dial a contact";
+    private String option6 = " 6 - Update a contact";
     private String option7 = " 7 - Export contact list";
     private String option0 = " 0 - Exit";
 
@@ -49,8 +51,8 @@ public class Phonebook {
                 case 2: deleteContact(); break;
                 case 3: findByName(); break;
                 case 4: findByNumber(); break;
-                //case 5: listAll(); break;
-                //case 6: dialContact(); break;
+                case 5: listAll(); break;
+                case 6: updateContact(); break;
                 //case 7: exportList(); break;
                 case 0: System.exit(0); break;
                 default: break;
@@ -74,8 +76,20 @@ public class Phonebook {
         }
     }
 
+    public void findByNumber() {
+        System.out.print("Enter phone number:");
+        int tel = validateNumber();
+        Contact contact = getbyNumber(tel);
+
+        if (contact == null) {
+            System.out.println("No contacts found by that number");
+        } else {
+            System.out.println("Contact found: " + contact.toString());
+        }
+    }
+
     public void addContact() {
-        System.out.println("Creating new contact");
+        System.out.println("Creating a new contact");
         String name = addName();
         int tel = addNumber();
 
@@ -89,15 +103,47 @@ public class Phonebook {
     public void deleteContact() {
         System.out.print("Enter contact name to delete: ");
         Contact toDelete = searchContacts();
+        boolean isDeleted = false;
 
         if (toDelete == null) {
             System.out.println("No contacts found by that name");
         } else {
-
+            try {
+                isDeleted = PhonebookEngine.removeContact(toDelete.getName(), toDelete.getNumber());
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if (isDeleted) {
+                System.out.println(toDelete.toString() + " has been deleted");
+            }
         }
     }
 
+    public void listAll() {
+        List<Contact> contactList = new ArrayList<Contact>();
+
+        try {
+            contactList = PhonebookEngine.getAllContacts();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        for (Contact contact : contactList) {
+            System.out.println(contact.toString());
+        }
+        System.out.println("Total contacts in phonebook: " + contactList.size());
+    }
+
+    public void updateContact() {
+        System.out.print("Enter a contact name to edit: ");
+        Contact contact = searchContacts();
+        // implement the edit method
+
+    }
+
     // private methods
+
+    // adds a name to a contact
     private String addName() {
         String name;
 
@@ -114,11 +160,77 @@ public class Phonebook {
         return name;
     }
 
+    // adds phone number to a contact
     private int addNumber() {
+        System.out.print("Enter contact phone number: ");
+        int tel;
+
+        while(true) {
+            tel = validateNumber();
+            Contact contact = getbyNumber(tel);
+            if (contact == null) {
+                System.out.println("Adding new number...");
+            } else if (contact.getNumber() == tel) {
+                System.out.println("That number already exists for contact " + contact.getName() + ". Try a different one");
+                continue;
+            }
+            break;
+        }
+        return tel;
+    }
+
+    private Contact searchContacts() {
+        String toSearch = userInput.nextLine().toLowerCase();
+        List<Contact> contactList = new ArrayList<Contact>();
+        List phoneNumbers = new ArrayList();
+        Contact foundContact = null;
+
+        try {
+            contactList = PhonebookEngine.getContacts(toSearch);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        if (contactList.size() == 1) {
+            System.out.println("One contact found");
+            foundContact = contactList.get(0);
+        } else if (contactList.size() > 1) {
+            System.out.println("More contacts found with name " + toSearch);
+            for (Contact contact : contactList) {
+                System.out.println(contact.toString());
+                phoneNumbers.add(contact.getNumber());
+            }
+
+            int selectByNumber;
+
+            while (true) {
+                System.out.print("Please choose an above contact by phone number: ");
+                try {
+                    selectByNumber = userInput.nextInt();
+
+                    if (!phoneNumbers.contains(selectByNumber)) {
+                        System.out.println("Number not found in the above list");
+                        continue;
+                    }
+                    break;
+                } catch (InputMismatchException e) {
+                    System.out.println("Invalid phone number entered");
+                    userInput.next();
+                }
+            }
+            for (Contact contact : contactList) {
+                if (contact.getNumber() == selectByNumber) {
+                    foundContact = contact;
+                }
+            }
+        }
+        return foundContact;
+    }
+
+    // validates correct phone number format
+    private int validateNumber() {
         int tel;
 
         while (true) {
-            System.out.print("Phone number: ");
             try {
                 tel = userInput.nextInt();
                 int telLength = String.valueOf(tel).length();
@@ -136,35 +248,16 @@ public class Phonebook {
         return tel;
     }
 
-    private Contact searchContacts() {
-        String toSearch = userInput.nextLine().toLowerCase();
-        List<Contact> contactList = new ArrayList<Contact>();
-        Contact foundContact = null;
+    private Contact getbyNumber (int tel) {
+        Contact contact = null;
 
         try {
-            contactList = PhonebookEngine.getContacts(toSearch);
+            contact = PhonebookEngine.getContactByNumber(tel);
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        if (contactList.size() == 1) {
-            System.out.println("One contact found");
-            foundContact = contactList.get(0);
-        } else if (contactList.size() > 1){
-            System.out.println("More contacts found with name " + toSearch);
-            for (Contact contact : contactList) {
-                contact.toString();
-            }
-            System.out.print("Please choose a contact by phone number: ");
-            int selectByNumber = Integer.parseInt(userInput.nextLine());
-
-            for (Contact contact : contactList) {
-                if (contact.getNumber() == selectByNumber) {
-                    foundContact = contact;
-                }
-            }
-        }
-        return foundContact;
+        return contact;
     }
+
 
 } // End of class
