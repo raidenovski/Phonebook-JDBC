@@ -66,6 +66,18 @@ public class PhonebookEngine {
         return isDeleted;
     }
 
+    protected static String updateContact(String whatToChange, String toChangeParam) throws SQLException {
+        String sql = "update contacts " + "set name =? " + "where name =?";
+
+        Connection connection = loadDriver();
+        try {
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, whatToChange);
+            statement.setString(2,toChangeParam);
+        }
+
+    }
+
     protected static List<Contact> getContacts(String queryParam) throws SQLException {
         List<Contact> contactList = new ArrayList<Contact>();
         String sql = "select * from contacts where name=?";
