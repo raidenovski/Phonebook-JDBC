@@ -52,7 +52,7 @@ public class Phonebook {
                 case 3: findByName(); break;
                 case 4: findByNumber(); break;
                 case 5: listAll(); break;
-                case 6: updateContact(); break;
+                case 6: editContact(); break;
                 //case 7: exportList(); break;
                 case 0: System.exit(0); break;
                 default: break;
@@ -134,10 +134,24 @@ public class Phonebook {
         System.out.println("Total contacts in phonebook: " + contactList.size());
     }
 
-    public void updateContact() {
+    public void editContact() {
         System.out.print("Enter a contact name to edit: ");
-        Contact contact = searchContacts();
+        Contact contactToEdit = searchContacts();
+        System.out.println("Enter new name for contact " + contactToEdit.getName());
+        String newName = addName();
+        boolean contactUpdated = false;
 
+        try {
+            contactUpdated = PhonebookEngine.updateContact(contactToEdit.getName(), newName);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        if (contactUpdated) {
+            System.out.println("Contact edited");
+        } else {
+            System.out.println("Something went wrong, contact has not been edited");
+        }
 
     }
 
@@ -201,7 +215,6 @@ public class Phonebook {
             }
 
             int selectByNumber;
-
             while (true) {
                 System.out.print("Please choose an above contact by phone number: ");
                 try {

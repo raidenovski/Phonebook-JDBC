@@ -66,16 +66,25 @@ public class PhonebookEngine {
         return isDeleted;
     }
 
-    protected static String updateContact(String whatToChange, String toChangeParam) throws SQLException {
+    protected static boolean updateContact(String whatToChange, String toChangeParam) throws SQLException {
         String sql = "update contacts " + "set name =? " + "where name =?";
+        boolean isChanged;
 
         Connection connection = loadDriver();
         try {
-            PreparedStatement statement = connection.prepareStatement(sql);
+            PreparedStatement statement = connection.prepareStatement(sql, ResultSet.CONCUR_UPDATABLE);
             statement.setString(1, whatToChange);
             statement.setString(2,toChangeParam);
+            try {
+                statement.executeUpdate();
+                isChanged = true;
+            } finally {
+                statement.close();
+            }
+        } finally {
+            connection.close();
         }
-
+        return isChanged;
     }
 
     protected static List<Contact> getContacts(String queryParam) throws SQLException {
