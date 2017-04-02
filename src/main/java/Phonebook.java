@@ -20,7 +20,6 @@ public class Phonebook {
     private String option4 = " 4 - Search by number";
     private String option5 = " 5 - List all contacts";
     private String option6 = " 6 - Update a contact";
-    private String option7 = " 7 - Export contact list";
     private String option0 = " 0 - Exit";
 
     public Phonebook() {
@@ -31,7 +30,6 @@ public class Phonebook {
         menuOptions.add(option4);
         menuOptions.add(option5);
         menuOptions.add(option6);
-        menuOptions.add(option7);
         menuOptions.add(option0);
         mainMenu();
     }
@@ -53,7 +51,6 @@ public class Phonebook {
                 case 4: findByNumber(); break;
                 case 5: listAll(); break;
                 case 6: editContact(); break;
-                //case 7: exportList(); break;
                 case 0: System.exit(0); break;
                 default: break;
             }

@@ -71,10 +71,11 @@ public class PhonebookEngine {
         String sql = "update contacts " + "set name =? " + "where name =?";
         boolean isChanged;
 
+        // TODO find a way to make the updates to DB permanent
         Connection connection = loadDriver();
         connection.setAutoCommit(false);
         try {
-            PreparedStatement statement = connection.prepareStatement(sql);
+            PreparedStatement statement = connection.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
             statement.setString(1, whatToChange);
             statement.setString(2, toChangeParam);
             try {
