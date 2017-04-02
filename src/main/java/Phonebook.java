@@ -20,7 +20,6 @@ public class Phonebook {
     private String option4 = " 4 - Search by number";
     private String option5 = " 5 - List all contacts";
     private String option6 = " 6 - Update a contact";
-    private String option7 = " 7 - Export contact list";
     private String option0 = " 0 - Exit";
 
     public Phonebook() {
@@ -31,7 +30,6 @@ public class Phonebook {
         menuOptions.add(option4);
         menuOptions.add(option5);
         menuOptions.add(option6);
-        menuOptions.add(option7);
         menuOptions.add(option0);
         mainMenu();
     }
@@ -53,7 +51,6 @@ public class Phonebook {
                 case 4: findByNumber(); break;
                 case 5: listAll(); break;
                 case 6: editContact(); break;
-                //case 7: exportList(); break;
                 case 0: System.exit(0); break;
                 default: break;
             }
@@ -196,44 +193,51 @@ public class Phonebook {
     private Contact searchContacts() {
         String toSearch = userInput.nextLine().toLowerCase();
         List<Contact> contactList = new ArrayList<Contact>();
-        List phoneNumbers = new ArrayList();
         Contact foundContact = null;
 
         try {
             contactList = PhonebookEngine.getContacts(toSearch);
+            if (contactList.size() == 1) {
+                System.out.println("One contact found");
+                foundContact = contactList.get(0);
+            } else if (contactList.size() > 1) {
+                System.out.println("More contacts found with name " + toSearch);
+                foundContact = moreThanOneContactFound(contactList);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        if (contactList.size() == 1) {
-            System.out.println("One contact found");
-            foundContact = contactList.get(0);
-        } else if (contactList.size() > 1) {
-            System.out.println("More contacts found with name " + toSearch);
-            for (Contact contact : contactList) {
-                System.out.println(contact.toString());
-                phoneNumbers.add(contact.getNumber());
-            }
+        return foundContact;
+    }
 
-            int selectByNumber;
-            while (true) {
-                System.out.print("Please choose an above contact by phone number: ");
-                try {
-                    selectByNumber = userInput.nextInt();
+    private Contact moreThanOneContactFound(List<Contact> contactList) {
+        List<Integer> phoneNumbers = new ArrayList<Integer>();
+        Contact foundContact = null;
 
-                    if (!phoneNumbers.contains(selectByNumber)) {
-                        System.out.println("Number not found in the above list");
-                        continue;
-                    }
-                    break;
-                } catch (InputMismatchException e) {
-                    System.out.println("Invalid phone number entered");
-                    userInput.next();
+        for (Contact contact : contactList) {
+            System.out.println(contact.toString());
+            phoneNumbers.add(contact.getNumber());
+        }
+
+        int selectByNumber;
+        while (true) {
+            System.out.print("Please choose an above contact by phone number: ");
+            try {
+                selectByNumber = userInput.nextInt();
+
+                if (!phoneNumbers.contains(selectByNumber)) {
+                    System.out.println("Number not found in the above list");
+                    continue;
                 }
+                break;
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid phone number entered");
+                userInput.next();
             }
-            for (Contact contact : contactList) {
-                if (contact.getNumber() == selectByNumber) {
-                    foundContact = contact;
-                }
+        }
+        for (Contact contact : contactList) {
+            if (contact.getNumber() == selectByNumber) {
+                foundContact = contact;
             }
         }
         return foundContact;
